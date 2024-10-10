@@ -39,3 +39,22 @@ Example data snippet:
     <seQesitm>발진, 가려움, 입 마름 등의 부작용이 나타날 수 있습니다.</seQesitm>
     <depositMethodQesitm>어린이 손이 닿지 않는 곳에 보관하십시오.</depositMethodQesitm>
 </item>
+
+
+## Key Tasks
+Training and Testing Dataset Composition
+
+### Data: NHIS_OPEN_GJ_2017_100.csv
+Approach:
+Split into a 4:1 ratio for training and test datasets
+Perform 3:1 k-fold validation to evaluate model performance
+Labeling Entire Dataset
+
+### Data: NHIS_OPEN_GJ_2017_100.csv, 질병 별 참고 데이터.xlsx
+Approach:
+Label entire dataset based on disease-specific reference data
+LLM-Based Pharmaceutical Recommendation Model Development
+
+### Data: IROS_239_의약품개요정보(e약은요) 서비스_v1.0.docx
+Approach:
+Develop an LLM-based model focusing on drug efficacy, usage, and contraindications
