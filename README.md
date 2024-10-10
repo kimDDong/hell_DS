@@ -8,18 +8,18 @@ This project focuses on utilizing health data from NHIS and pharmaceutical infor
 ## Key Tasks
 Training and Testing Dataset Composition
 
-### Data: NHIS_OPEN_GJ_2017_100.csv [x]
+### Data: NHIS_OPEN_GJ_2017_100.csv [x] 
 Approach:
 Split into a 4:1 ratio for training and test datasets
 Perform 3:1 k-fold validation to evaluate model performance
 Labeling Entire Dataset
 
-### Data: NHIS_OPEN_GJ_2017_100.csv, 질병 별 참고 데이터.xlsx [ ]
+### Data: NHIS_OPEN_GJ_2017_100.csv, 질병 별 참고 데이터.xlsx [ ] 
 Approach:
 Label entire dataset based on disease-specific reference data
 LLM-Based Pharmaceutical Recommendation Model Development
 
-### Data: IROS_239_의약품개요정보(e약은요) 서비스_v1.0.docx [ ]
+### Data: IROS_239_의약품개요정보(e약은요) 서비스_v1.0.docx [ ] 
 Approach:
 Develop an LLM-based model focusing on drug efficacy, usage, and contraindications
 
