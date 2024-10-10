@@ -132,14 +132,14 @@ for i, df in enumerate(dfs):
 
     # 각 질병에 대해 판단 후 값을 설정
 
-    df['지방간'] = (sum(fatty_liver_conditions) >= len(fatty_liver_conditions)).astype(int)
-    df['궤양성대장염 및 크론병'] = (sum(uc_cd_conditions) >= len(uc_cd_conditions)).astype(int)
-    df['간염'] = (sum(hepatitis_conditions) >= len(hepatitis_conditions)).astype(int)
-    df['위식도역류질환'] = (sum(gerd_conditions) >= len(gerd_conditions)).astype(int)
-    df['고혈압'] = (sum(hypertension_conditions) >= len(hypertension_conditions)).astype(int)
-    df['협심증'] = (sum(angina_conditions) >= len(angina_conditions)).astype(int)
-    df['심근경색증'] = (sum(myocardial_infarction_conditions) >= len(myocardial_infarction_conditions)).astype(int)
-    df['당뇨병'] = (sum(diabetes_conditions) >= len(diabetes_conditions)).astype(int)
-    df['비염'] = (sum(rhinitis_conditions) >= len(rhinitis_conditions)).astype(int)
+    df['지방간'] = (sum(fatty_liver_conditions) >= len(fatty_liver_conditions)/2).astype(int)
+    df['궤양성대장염 및 크론병'] = (sum(uc_cd_conditions) >= len(uc_cd_conditions)/2).astype(int)
+    df['간염'] = (sum(hepatitis_conditions) >= len(hepatitis_conditions)/2).astype(int)
+    df['위식도역류질환'] = (sum(gerd_conditions) >= len(gerd_conditions)/2).astype(int)
+    df['고혈압'] = (sum(hypertension_conditions) >= len(hypertension_conditions)/2).astype(int)
+    df['협심증'] = (sum(angina_conditions) >= len(angina_conditions)/2).astype(int)
+    df['심근경색증'] = (sum(myocardial_infarction_conditions) >= len(myocardial_infarction_conditions)/2).astype(int)
+    df['당뇨병'] = (sum(diabetes_conditions) >= len(diabetes_conditions)/2).astype(int)
+    df['비염'] = (sum(rhinitis_conditions) >= len(rhinitis_conditions)/2).astype(int)
 
     df.to_csv(f'label_filtered_split_data_{i + 1}.csv', index=False, encoding='EUC-KR')
