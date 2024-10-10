@@ -8,7 +8,7 @@ This project focuses on utilizing health data from NHIS and pharmaceutical infor
 ## Key Tasks
 Training and Testing Dataset Composition
 
-### [ ] Data: NHIS_OPEN_GJ_2017_100.csv
+### [O] Data: NHIS_OPEN_GJ_2017_100.csv
 Approach:
 Split into a 4:1 ratio for training and test datasets
 Perform 3:1 k-fold validation to evaluate model performance
