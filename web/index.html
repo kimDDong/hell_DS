@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>약 추천 시스템</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #result {
+      margin-top: 20px;
+      white-space: pre-wrap; /* 줄 바꿈을 유지합니다. */
+    }
+    .drug-item {
+      margin-bottom: 20px;
+      cursor: pointer; /* 클릭 가능한 요소로 커서 모양 변경 */
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background-color 0.2s;
+    }
+    .drug-item:hover {
+      background-color: #f0f0f0; /* 마우스 오버 시 배경색 변경 */
+    }
+    .drug-image {
+      max-width: 200px; /* 이미지 최대 너비 설정 */
+      height: auto; /* 높이는 자동 조정 */
+      margin-right: 10px; /* 이미지와 텍스트 사이 여백 */
+      vertical-align: middle; /* 텍스트와 이미지 정렬 */
+    }
+    .drug-details {
+      display: none; /* 처음에 세부 정보는 숨김 */
+      margin-top: 10px;
+      font-size: 0.9em; /* 폰트 크기 조정 */
+    }
+  </style>
+</head>
+<body>
+  <h1>약 추천 시스템</h1>
+
+  <label for="symptoms">증상을 입력하세요:</label>
+  <input type="text" id="symptoms" placeholder="예: 두통, 감기" />
+  <button id="searchButton">약 추천하기</button>
+
+  <!-- API 요청 결과를 표시할 부분 -->
+  <div id="result"></div>
+
+  <script>
+    // API 기본 URL
+    const url = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
+
+    // API 키 (본인의 API 키로 대체해야 함)
+    const serviceKey = "/XOOBhwKX+fYTkJSvYYlWSGQXXs7fJwqn1XN0WRCJQdwOyM2fa1VZ1OT0PlU4OhCiX4HUY/nZzbhTS2FAT98Iw=="; // 자신의 API 키를 입력하세요
+
+    document.getElementById("searchButton").addEventListener("click", function() {
+      const symptoms = document.getElementById("symptoms").value;
+
+      // 증상 입력 확인
+      if (!symptoms) {
+        alert("증상을 입력해주세요.");
+        return;
+      }
+
+      // 요청 파라미터 설정
+      const params = {
+        serviceKey: serviceKey,      // 필수 파라미터 (발급받은 키)
+        pageNo: '1',                 // 페이지 번호
+        numOfRows: '10',             // 한 페이지에 표시할 결과 수
+        efcyQesitm: symptoms,        // 증상에 해당하는 효능 검색
+        _type: 'json'                // 결과 포맷 (xml 또는 json)
+      };
+
+      // 파라미터를 URL 쿼리 스트링으로 변환
+      const queryString = new URLSearchParams(params).toString();
+
+      // API 요청
+      fetch(`${url}?${queryString}`)
+        .then(response => {
+          return response.text();
+        })
+        .then(data => {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(data, "application/xml");
+
+          // 결과에서 약 정보를 추출
+          const items = xmlDoc.getElementsByTagName("item");
+          if (items.length === 0) {
+            document.getElementById("result").textContent = "해당 증상에 대한 약이 없습니다.";
+            return;
+          }
+
+          let resultHTML = "";
+          for (let i = 0; i < items.length; i++) {
+            const drugName = items[i].getElementsByTagName("itemName")[0].textContent;
+            const entpName = items[i].getElementsByTagName("entpName")[0].textContent;
+            const itemImage = items[i].getElementsByTagName("itemImage")[0]?.textContent || ""; // 약 사진 URL
+            const atpnQesitm = items[i].getElementsByTagName("atpnQesitm")[0]?.textContent || "정보 없음"; // 주의사항
+            const useMethodQesitm = items[i].getElementsByTagName("useMethodQesitm")[0]?.textContent || "정보 없음"; // 용법
+
+            resultHTML += `
+              <div class="drug-item" onclick="toggleDetails(this)">
+                <img src="${itemImage}" alt="${drugName} 이미지" class="drug-image" />
+                <span>${drugName} (제조사: ${entpName})</span>
+                <div class="drug-details">
+                  <p><strong>용법:</strong> ${useMethodQesitm}</p>
+                  <p><strong>주의 사항:</strong> ${atpnQesitm}</p>
+                </div>
+              </div>
+            `;
+          }
+
+          document.getElementById("result").innerHTML = resultHTML;
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+          document.getElementById("result").textContent = 'Error: ' + error.message;
+        });
+    });
+
+    function toggleDetails(element) {
+      const details = element.querySelector('.drug-details');
+      details.style.display = details.style.display === 'none' || details.style.display === '' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>
