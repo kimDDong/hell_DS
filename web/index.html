@@ -5,87 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>약 추천 시스템</title>
   <style>
+    /* 전체적인 스타일 */
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+      font-family: 'Noto Sans KR', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
     }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    label, input, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
     #result {
       margin-top: 20px;
-      white-space: pre-wrap; /* 줄 바꿈을 유지합니다. */
     }
+
+    /* 약 정보 아이템 스타일 */
     .drug-item {
+      display: flex;
+      align-items: center;
       margin-bottom: 20px;
-      cursor: pointer; /* 클릭 가능한 요소로 커서 모양 변경 */
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 5px;
-      transition: background-color 0.2s;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background-color: #fafafa;
     }
+
     .drug-item:hover {
-      background-color: #f0f0f0; /* 마우스 오버 시 배경색 변경 */
+      transform: scale(1.02);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: #f0f0f0;
     }
+
     .drug-image {
-      max-width: 200px; /* 이미지 최대 너비 설정 */
-      height: auto; /* 높이는 자동 조정 */
-      margin-right: 10px; /* 이미지와 텍스트 사이 여백 */
-      vertical-align: middle; /* 텍스트와 이미지 정렬 */
+      max-width: 100px;
+      margin-right: 15px;
+      border-radius: 10px;
     }
+
+    .drug-content {
+      flex: 1;
+    }
+
+    .drug-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
     .drug-details {
-      display: none; /* 처음에 세부 정보는 숨김 */
+      display: none;
+      font-size: 14px;
+      color: #555;
       margin-top: 10px;
-      font-size: 0.9em; /* 폰트 크기 조정 */
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 600px) {
+      .drug-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .drug-image {
+        max-width: 80%;
+        margin-bottom: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>약 추천 시스템</h1>
+  <header>약 추천 시스템</header>
 
-  <label for="symptoms">증상을 입력하세요:</label>
-  <input type="text" id="symptoms" placeholder="예: 두통, 감기" />
-  <button id="searchButton">약 추천하기</button>
+  <div class="container">
+    <label for="symptoms">증상을 입력하세요:</label>
+    <input type="text" id="symptoms" placeholder="예: 두통, 감기" />
+    <button id="searchButton">약 추천하기</button>
 
-  <!-- API 요청 결과를 표시할 부분 -->
-  <div id="result"></div>
+    <div id="result"></div>
+  </div>
 
   <script>
-    // API 기본 URL
     const url = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
-
-    // API 키 (본인의 API 키로 대체해야 함)
-    const serviceKey = "/XOOBhwKX+fYTkJSvYYlWSGQXXs7fJwqn1XN0WRCJQdwOyM2fa1VZ1OT0PlU4OhCiX4HUY/nZzbhTS2FAT98Iw=="; // 자신의 API 키를 입력하세요
+    const serviceKey = "/XOOBhwKX+fYTkJSvYYlWSGQXXs7fJwqn1XN0WRCJQdwOyM2fa1VZ1OT0PlU4OhCiX4HUY/nZzbhTS2FAT98Iw==";
 
     document.getElementById("searchButton").addEventListener("click", function() {
       const symptoms = document.getElementById("symptoms").value;
 
-      // 증상 입력 확인
       if (!symptoms) {
         alert("증상을 입력해주세요.");
         return;
       }
 
-      // 요청 파라미터 설정
       const params = {
-        serviceKey: serviceKey,      // 필수 파라미터 (발급받은 키)
-        pageNo: '1',                 // 페이지 번호
-        numOfRows: '10',             // 한 페이지에 표시할 결과 수
-        efcyQesitm: symptoms,        // 증상에 해당하는 효능 검색
-        _type: 'json'                // 결과 포맷 (xml 또는 json)
+        serviceKey: serviceKey,
+        pageNo: '1',
+        numOfRows: '10',
+        efcyQesitm: symptoms,
+        _type: 'json'
       };
 
-      // 파라미터를 URL 쿼리 스트링으로 변환
       const queryString = new URLSearchParams(params).toString();
 
-      // API 요청
       fetch(`${url}?${queryString}`)
-        .then(response => {
-          return response.text();
-        })
+        .then(response => response.text())
         .then(data => {
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(data, "application/xml");
-
-          // 결과에서 약 정보를 추출
           const items = xmlDoc.getElementsByTagName("item");
+
           if (items.length === 0) {
             document.getElementById("result").textContent = "해당 증상에 대한 약이 없습니다.";
             return;
@@ -95,17 +167,19 @@
           for (let i = 0; i < items.length; i++) {
             const drugName = items[i].getElementsByTagName("itemName")[0].textContent;
             const entpName = items[i].getElementsByTagName("entpName")[0].textContent;
-            const itemImage = items[i].getElementsByTagName("itemImage")[0]?.textContent || ""; // 약 사진 URL
-            const atpnQesitm = items[i].getElementsByTagName("atpnQesitm")[0]?.textContent || "정보 없음"; // 주의사항
-            const useMethodQesitm = items[i].getElementsByTagName("useMethodQesitm")[0]?.textContent || "정보 없음"; // 용법
+            const itemImage = items[i].getElementsByTagName("itemImage")[0]?.textContent || "";
+            const atpnQesitm = items[i].getElementsByTagName("atpnQesitm")[0]?.textContent || "정보 없음";
+            const useMethodQesitm = items[i].getElementsByTagName("useMethodQesitm")[0]?.textContent || "정보 없음";
 
             resultHTML += `
               <div class="drug-item" onclick="toggleDetails(this)">
                 <img src="${itemImage}" alt="${drugName} 이미지" class="drug-image" />
-                <span>${drugName} (제조사: ${entpName})</span>
-                <div class="drug-details">
-                  <p><strong>용법:</strong> ${useMethodQesitm}</p>
-                  <p><strong>주의 사항:</strong> ${atpnQesitm}</p>
+                <div class="drug-content">
+                  <div class="drug-title">${drugName} (제조사: ${entpName})</div>
+                  <div class="drug-details">
+                    <p><strong>용법:</strong> ${useMethodQesitm}</p>
+                    <p><strong>주의 사항:</strong> ${atpnQesitm}</p>
+                  </div>
                 </div>
               </div>
             `;
