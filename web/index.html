@@ -4,120 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>약 추천 시스템</title>
-  <style>
-    /* 전체적인 스타일 */
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-    }
-
-    header {
-      background-color: #4CAF50;
-      color: white;
-      padding: 15px 20px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 20px;
-      background-color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-    }
-
-    label, input, button {
-      display: block;
-      width: 100%;
-      margin-bottom: 15px;
-    }
-
-    input {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    #result {
-      margin-top: 20px;
-    }
-
-    /* 약 정보 아이템 스타일 */
-    .drug-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      transition: transform 0.2s, box-shadow 0.2s;
-      background-color: #fafafa;
-    }
-
-    .drug-item:hover {
-      transform: scale(1.02);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      background-color: #f0f0f0;
-    }
-
-    .drug-image {
-      max-width: 100px;
-      margin-right: 15px;
-      border-radius: 10px;
-    }
-
-    .drug-content {
-      flex: 1;
-    }
-
-    .drug-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .drug-details {
-      display: none;
-      font-size: 14px;
-      color: #555;
-      margin-top: 10px;
-    }
-
-    /* 반응형 디자인 */
-    @media (max-width: 600px) {
-      .drug-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .drug-image {
-        max-width: 80%;
-        margin-bottom: 10px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="loader.css"> <!-- Wizard Loader CSS 추가 -->
 </head>
+
 <body>
   <header>약 추천 시스템</header>
 
@@ -125,78 +15,41 @@
     <label for="symptoms">증상을 입력하세요:</label>
     <input type="text" id="symptoms" placeholder="예: 두통, 감기" />
     <button id="searchButton">약 추천하기</button>
+    <div id="loader" class="scene" style="display: none;">
+      <div class="scene">
+        <div class="objects">
+          <div class="pills">
+            <img src="medicine_icon.png" width="150" height="150">
+          </div>
+        </div>
+        <div class="wizard">
+          <div class="body"></div>
+          <div class="right-arm">
+            <div class="right-hand"></div>
+          </div>
+          <div class="left-arm">
+            <div class="left-hand"></div>
+          </div>
+          <div class="head">
+            <div class="beard"></div>
+            <div class="face">
+              <div class="adds"></div>
+            </div>
+            <div class="hat">
+              <div class="hat-of-the-hat"></div>
+              <div class="four-point-star --first"></div>
+              <div class="four-point-star --second"></div>
+              <div class="four-point-star --third"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="noise"></div>
+    </div>
 
     <div id="result"></div>
   </div>
 
-  <script>
-    const url = "https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList";
-    const serviceKey = "/XOOBhwKX+fYTkJSvYYlWSGQXXs7fJwqn1XN0WRCJQdwOyM2fa1VZ1OT0PlU4OhCiX4HUY/nZzbhTS2FAT98Iw==";
-
-    document.getElementById("searchButton").addEventListener("click", function() {
-      const symptoms = document.getElementById("symptoms").value;
-
-      if (!symptoms) {
-        alert("증상을 입력해주세요.");
-        return;
-      }
-
-      const params = {
-        serviceKey: serviceKey,
-        pageNo: '1',
-        numOfRows: '10',
-        efcyQesitm: symptoms,
-        _type: 'json'
-      };
-
-      const queryString = new URLSearchParams(params).toString();
-
-      fetch(`${url}?${queryString}`)
-        .then(response => response.text())
-        .then(data => {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(data, "application/xml");
-          const items = xmlDoc.getElementsByTagName("item");
-
-          if (items.length === 0) {
-            document.getElementById("result").textContent = "해당 증상에 대한 약이 없습니다.";
-            return;
-          }
-
-          let resultHTML = "";
-          for (let i = 0; i < items.length; i++) {
-            const drugName = items[i].getElementsByTagName("itemName")[0].textContent;
-            const entpName = items[i].getElementsByTagName("entpName")[0].textContent;
-            const itemImage = items[i].getElementsByTagName("itemImage")[0]?.textContent || "";
-            const atpnQesitm = items[i].getElementsByTagName("atpnQesitm")[0]?.textContent || "정보 없음";
-            const useMethodQesitm = items[i].getElementsByTagName("useMethodQesitm")[0]?.textContent || "정보 없음";
-
-            resultHTML += `
-              <div class="drug-item" onclick="toggleDetails(this)">
-                <img src="${itemImage}" alt="${drugName} 이미지" class="drug-image" />
-                <div class="drug-content">
-                  <div class="drug-title">${drugName} (제조사: ${entpName})</div>
-                  <div class="drug-details">
-                    <p><strong>용법:</strong> ${useMethodQesitm}</p>
-                    <p><strong>주의 사항:</strong> ${atpnQesitm}</p>
-                  </div>
-                </div>
-              </div>
-            `;
-          }
-
-          document.getElementById("result").innerHTML = resultHTML;
-        })
-        .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-          document.getElementById("result").textContent = 'Error: ' + error.message;
-        });
-    });
-
-    function toggleDetails(element) {
-      const details = element.querySelector('.drug-details');
-      details.style.display = details.style.display === 'none' || details.style.display === '' ? 'block' : 'none';
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
