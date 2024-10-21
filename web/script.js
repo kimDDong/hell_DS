@@ -35,7 +35,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
         for (let i = 0; i < items.length; i++) {
           const drugName = items[i].getElementsByTagName("itemName")[0].textContent;
           const entpName = items[i].getElementsByTagName("entpName")[0].textContent;
-          const itemImage = items[i].getElementsByTagName("itemImage")[0]?.textContent || "";
+          const itemImage = items[i].getElementsByTagName("itemImage")[0]?.textContent || "./pill2.png";
           const atpnQesitm = items[i].getElementsByTagName("atpnQesitm")[0]?.textContent || "정보 없음";
           const useMethodQesitm = items[i].getElementsByTagName("useMethodQesitm")[0]?.textContent || "정보 없음";
 
