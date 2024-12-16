@@ -20,7 +20,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
     _type: 'json',
   };
   const queryString = new URLSearchParams(params).toString();
-
+  console.log(queryString);
   fetch(`${url}?${queryString}`)
     .then(response => response.text())
     .then(data => {
@@ -29,7 +29,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
       const items = xmlDoc.getElementsByTagName("item");
 
       if (items.length === 0) {
-        document.getElementById("result").textContent = "해당 증상에 대한 약이 없습니다.";
+        document.getElementById("result").textContent = "해당 증상에 대한 건강기능식품이 없습니다.";
       } else {
         let resultHTML = "";
         for (let i = 0; i < items.length; i++) {
@@ -91,7 +91,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
 //      const items = xmlDoc.getElementsByTagName("item");
 //
 //      if (items.length === 0) {
-//        document.getElementById("result").textContent = "해당 증상에 대한 약이 없습니다.";
+//        document.getElementById("result").textContent = "해당 증상에 대한 건강기능식품이 없습니다.";
 //        return;
 //      }
 //
